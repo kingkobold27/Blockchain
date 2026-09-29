@@ -73,7 +73,7 @@ void verify(struct User* curr) {
 
     printf("******** Verifying Log *********\n\n");
 
-    struct Block* prev = NULL;
+    struct User* prev = NULL;
     if (curr != NULL) {
         prev = curr; // Error: Incorrectly setting previous block
     }
