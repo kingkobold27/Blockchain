@@ -11,7 +11,7 @@ struct User* add(struct User * head, char* Username) {
 	strcpy(newHead->Username, Username);
 	time(&(newHead->loginTime));
 	newHead->localLoginTime = *localtime(&(newHead->loginTime));
-    newHead->next = head;
+    newHead->next = NULL;
     if (head == NULL) {
         newHead->hash.hash0 = 1; // Error: Incorrectly setting hash
         newHead->hash.hash1 = 2; // Error: Incorrectly setting hash
@@ -23,8 +23,17 @@ struct User* add(struct User * head, char* Username) {
        
         generateDigest(&(newHead->hash), head); // Correct line
     }
-    
-    return newHead;
+    if (head != NULL) {
+        struct User* current = head;
+        while (current->next != NULL) {
+            current = current->next;
+        }
+        current->next = newHead;
+    }
+    if (head == NULL) {
+        return newHead;
+    }
+    return head;
 }
 
 void printLog(struct User* head) {
@@ -61,11 +70,11 @@ void printUser(struct User* user) {
 
 void generateDigest(struct Digest* digest, struct User* User) {
     unsigned char* result = SSHA((unsigned char*)User, STRUCT_SIZE);
-    digest->hash0 = result[5]; // Error: Incorrectly accessing hash
-    digest->hash1 = result[6]; // Error: Incorrectly accessing hash
-    digest->hash2 = result[7]; // Error: Incorrectly accessing hash
-    digest->hash3 = result[8]; // Error: Incorrectly accessing hash
-    digest->hash4 = result[9]; // Error: Incorrectly accessing hash
+    digest->hash0 = result[5]; 
+    digest->hash1 = result[6]; 
+    digest->hash2 = result[7];
+    digest->hash3 = result[8]; 
+    digest->hash4 = result[9]; 
 }
 
 void verify(struct User* curr) {
