@@ -20,8 +20,16 @@ struct User* add(struct User * head, char* Username) {
         newHead->hash.hash4 = 5; // Error: Incorrectly setting hash
     }
     else {
-       
+        struct User* current = head;
+
+        while (current->next != NULL) {
+            current = current->next;
+        }
+
+        newHead->prevHash = (unsigned char*)&current->hash;
+
         generateDigest(&(newHead->hash), head); // Correct line
+
     }
     if (head != NULL) {
         struct User* current = head;
