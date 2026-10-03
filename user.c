@@ -18,6 +18,7 @@ struct User* add(struct User * head, char* Username) {
         newHead->hash.hash2 = 3; // Error: Incorrectly setting hash
         newHead->hash.hash3 = 4; // Error: Incorrectly setting hash
         newHead->hash.hash4 = 5; // Error: Incorrectly setting hash
+        newHead->prevHash = NULL;
     }
     else {
         struct User* current = head;
@@ -28,7 +29,9 @@ struct User* add(struct User * head, char* Username) {
 
         newHead->prevHash = (unsigned char*)&current->hash;
 
-        generateDigest(&(newHead->hash), head); // Correct line
+        current->next = newHead;
+
+        generateDigest(&(newHead->hash), current); // Correct line
 
     }
     if (head != NULL) {
@@ -78,26 +81,26 @@ void printUser(struct User* user) {
 
 void generateDigest(struct Digest* digest, struct User* User) {
     unsigned char* result = SSHA((unsigned char*)User, STRUCT_SIZE);
-    digest->hash0 = result[5]; 
-    digest->hash1 = result[6]; 
-    digest->hash2 = result[7];
-    digest->hash3 = result[8]; 
-    digest->hash4 = result[9]; 
+    digest->hash0 = result[0]; 
+    digest->hash1 = result[1]; 
+    digest->hash2 = result[2];
+    digest->hash3 = result[3]; 
+    digest->hash4 = result[4]; 
 }
 
 void verify(struct User* curr) {
-    int height = 1;
+    int height = 2;
 
     printf("******** Verifying Log *********\n\n");
 
-    struct User* prev = NULL;
+    struct User* prev = curr;
     if (curr != NULL) {
-        prev = curr; // Error: Incorrectly setting previous block
+        curr = curr->next;
     }
 
     printf("User 1, impossible to verify\n");
     printf("\t%-20s", "User Data:");
-    printUser(curr);
+    printUser(prev);
     printf("\n");
 
     while (prev) {
@@ -107,12 +110,12 @@ void verify(struct User* curr) {
             struct Digest prev_digest_computed;
             generateDigest(&prev_digest_computed, curr); // Error: Incorrectly passing current block
 
-            if (digest_equal(prev_digest_computed, prev->hash)) { // Error: Comparing with previous block's hash
+            if (digest_equal(prev_digest_computed, curr->hash)) { // Error: Comparing with previous block's hash
                 printf("User %d passed\n", height);
                 printf("\t%-20s", "User Data:");
                 printUser(curr);
                 printf("\t%-20s", "Saved Hash:");
-                printDigest(prev->hash); // Error: Printing saved hash of current block
+                printDigest(curr->hash); // Error: Printing saved hash of current block
                 printf("\t%-20s", "Calculated Hash:");
                 printDigest(prev_digest_computed);
                 printf("\n\n");
@@ -122,15 +125,15 @@ void verify(struct User* curr) {
                 printf("\t%-20s", "User Data:");
                 printUser(curr);
                 printf("\t%-20s", "Saved Hash:");
-                printDigest(prev->hash); // Error: Printing saved hash of current block
+                printDigest(curr->hash); // Error: Printing saved hash of current block
                 printf("\t%-20s", "Calculated Hash:");
                 printDigest(prev_digest_computed);
                 printf("\n\n");
                 return;
             }
         }
-        curr = prev; // Correct line
-        prev = curr->next; // Correct line
+        prev = curr; // Correct line
+        curr = curr->next; // Correct line
         height++;
     }
 
