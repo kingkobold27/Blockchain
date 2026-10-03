@@ -34,13 +34,7 @@ struct User* add(struct User * head, char* Username) {
         generateDigest(&(newHead->hash), current); // Correct line
 
     }
-    if (head != NULL) {
-        struct User* current = head;
-        while (current->next != NULL) {
-            current = current->next;
-        }
-        current->next = newHead;
-    }
+   
     if (head == NULL) {
         return newHead;
     }
@@ -108,7 +102,7 @@ void verify(struct User* curr) {
 
         if (prev != NULL) {
             struct Digest prev_digest_computed;
-            generateDigest(&prev_digest_computed, curr); // Error: Incorrectly passing current block
+            generateDigest(&prev_digest_computed, prev); // Error: Incorrectly passing current block
 
             if (digest_equal(prev_digest_computed, curr->hash)) { // Error: Comparing with previous block's hash
                 printf("User %d passed\n", height);
